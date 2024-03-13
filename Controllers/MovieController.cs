@@ -31,7 +31,7 @@ namespace AssessmentProject.Controllers
             {
                 var client = _clientFactory.CreateClient();
                 var apiKey = "dfe76a61";
-                var response = await client.GetAsync($"https://www.omdbapi.com?apikey={apiKey}&t={title}");
+                var response = await client.GetAsync($"https://www.omdbapi.com?apikey={apiKey}&s={title}");
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -39,9 +39,19 @@ namespace AssessmentProject.Controllers
                 }
 
                 var content = await response.Content.ReadAsStringAsync(); // Read response content as string
-                var movieData = JsonSerializer.Deserialize<MovieData>(content); // Deserialize JSON string to MovieData object
+                
+                Console.WriteLine(content);
+
+                var movieData =  content; 
+
+                
+
                 AddToSearchHistory(title);
+
+
                 return Ok(movieData);
+
+                
             }
             catch (HttpRequestException)
             {

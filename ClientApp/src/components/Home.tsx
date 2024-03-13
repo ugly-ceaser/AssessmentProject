@@ -2,10 +2,8 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { IMovieData } from '../interface/IMovieData';
 
-
-
 const Home: React.FC = () => {
-    const [movieData, setMovieData] = useState<IMovieData | null>(null);
+    const [movieData, setMovieData] = useState<IMovieData[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -20,8 +18,9 @@ const Home: React.FC = () => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            const data: IMovieData = await response.json();
-            setMovieData(data);
+            const data = await response.json();
+
+            setMovieData(data.Search);
             setError(null);
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -47,10 +46,12 @@ const Home: React.FC = () => {
                 <p>Loading...</p>
             ) : error ? (
                 <p>Error: {error}</p>
-            ) : movieData ? (
-                <MovieCard movieData={movieData} />
             ) : (
-                <p>Search for a movie</p>
+                <div className="row">
+                    {movieData.map((movie, index) => (
+                        <MovieCard key={index} movieData={movie} />
+                    ))}
+                </div>
             )}
         </div>
     );
@@ -68,22 +69,22 @@ const MovieCard: React.FC<MovieCardProps> = ({ movieData }) => {
     };
 
     return (
-        <div className="card p-3 m-2">
-            <img src={movieData.poster} className="card-img-top" alt="Movie Poster" />
+        <div className="card p-1 col-4">
+            <img src={movieData.Poster} className="card-img-top" alt="Movie Poster" />
             <div className="card-body">
-                <h5 className="card-title">{movieData.title}</h5>
-                <p className="card-text">{movieData.plot}</p>
-                
-                <div className={`collapse${isExpanded ? ' show' : ''}`}>
-                    <div className="mt-3">
-                        <p><strong>Genre:</strong> {movieData.genre}</p>
-                        <p><strong>Director:</strong> {movieData.director}</p>
-                        
-                    </div>
-                </div>
-                <button className="btn btn-primary" onClick={handleToggle}>
+                <h5 className="card-title">{movieData.Title}</h5>
+                <p className="card-text">{movieData.Type}</p>
+
+                <button className="btn btn-primary btn-sm" onClick={handleToggle}>
                     {isExpanded ? 'Hide Details' : 'View More info'}
                 </button>
+                <div className={`collapse${isExpanded ? ' show' : ''}`}>
+                    <div className="mt-3">
+                        <p><strong>Year:</strong> {movieData.Year}</p>
+                        
+                        {/* Add more properties as needed */}
+                    </div>
+                </div>
             </div>
         </div>
     );
